@@ -1,0 +1,11 @@
+# npm
+node_modules/
+
+# Source code download
+public/source.zip
+
+# Private configuration
+config_private.js
+
+# Nightlies artifacts
+public/nightlies/

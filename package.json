@@ -1,0 +1,26 @@
+{
+  "name": "supertux.semphris.com",
+  "version": "0.0.1",
+  "description": "Dynamic website, alternative to supertux.org",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "node run_tests.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Semphriss/supertux.semphris.com.git"
+  },
+  "author": "Semphris",
+  "license": "AGPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/Semphriss/supertux.semphris.com/issues"
+  },
+  "homepage": "https://github.com/Semphriss/supertux.semphris.com#readme",
+  "dependencies": {
+    "cookie-parser": "^1.4.5",
+    "express": "^4.17.1",
+    "express-fileupload": "^1.2.1",
+    "helmet": "^4.4.1"
+  }
+}
