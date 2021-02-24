@@ -17,6 +17,7 @@
 const crypto = require("crypto");
 const fs = require("fs");
 const https = require('https');
+const recursive = require("recursive-readdir");
 
 function get_categories(cb) {
   fs.readdir('./public/nightlies', (err, cats) => {
@@ -39,7 +40,7 @@ function get_categories_html(cb) {
   });
 }
 
-function get_file_info(file, cb) {
+function get_file_info(file) {
   return new Promise(function(resolve, reject) {
     fs.stat(file, (err, stats) => {
       if (err)
@@ -66,7 +67,7 @@ function get_file_info(file, cb) {
 function bind(app) {
   app.get('/nightlies/:subdir/?', (req, res) => {
     get_categories_html((topbar) => {
-      fs.readdir('./public/nightlies/' + req.params.subdir, async (err, artifacts) => {
+      recursive(__dirname + '/../../public/nightlies/' + req.params.subdir, async (err, artifacts) => {
         
         if (err) {
           parse('nightlies/index.html', {
@@ -91,17 +92,33 @@ function bind(app) {
 
           var nightlies = '';
           if (artifacts.length > 0) {
+            var arts = [];
+
             for (var n of artifacts) {
-              var info = await get_file_info(__dirname + '/../../public/nightlies/' + req.params.subdir + "/" + n);
+              arts.push({
+                name: n.substr(n.lastIndexOf('/') + 1),
+                // The hell below actually means "the name of the folder the file is in"
+                branch: n.substr(n.substr(0, n.lastIndexOf('/')).lastIndexOf('/') + 1, n.lastIndexOf('/') - n.substr(0, n.lastIndexOf('/')).lastIndexOf('/') - 1),
+                ...await get_file_info(n)
+              });
+            }
+
+            // Reverse date order
+            arts.sort((a, b) => b.date - a.date);
+
+            for (var a of arts) {
               nightlies += '<tr>' +
-              '<td><a href="/nightlies/' + htmlescape(req.params.subdir + "/" + n) + '"/>' + n + '</a></td>' + 
-              '<td>' + info.date.toUTCString() + '</td>' + 
-              '<td>' + info.size + ' MB</td>' +
-              '<td>' + info.hash + '</td>' + 
+              '<td><a href="/nightlies/' + htmlescape(req.params.subdir + "/" + a.branch + '/' + a.name) + '"/>' + a.name + '</a></td>' + 
+              '<td>' + a.branch + '</td>' + 
+              '<td>' + a.date.toUTCString() + '</td>' + 
+              '<td>' + a.size + ' MB</td>' +
+              '<td>' + a.hash + '</td>' + 
                 '</tr>';
             }
+
             nightlies = '<table><tr>' +
             '<th>Download</th>' + 
+            '<th>Branch</th>' + 
             '<th>Date</th>' + 
             '<th>Size</th>' + 
             '<th>SHA-256 Hash</th>' + 
@@ -169,13 +186,16 @@ function bind(app) {
 
   app.post('/api/nightlies/?', (req, res) => {
 
-    if (!req.files || !req.files.artifact || !req.body.key || !req.body.subdir) {
+    if (!req.files || !req.files.artifact || !req.body.key || !req.body.subdir || !req.body.branch) {
       res.status(400).send(JSON.stringify({
         error: true,
         message: 'Missing body params',
       }));
       return;
     }
+
+    req.body.subdir = req.body.subdir.replace(/\//g, "_");
+    req.body.branch = req.body.branch.replace(/\//g, ".");
 
     if (crypto.createHash('sha512').update(req.body.key).digest('hex') != config.key) {
       res.status(401).send(JSON.stringify({
@@ -185,11 +205,11 @@ function bind(app) {
       return;
     }
 
-    fs.mkdir(__dirname + '/../../public/nightlies/' + req.body.subdir + '/', { recursive: true }, (err) => {
+    fs.mkdir(__dirname + '/../../public/nightlies/' + req.body.subdir + '/' + req.body.branch, { recursive: true }, (err) => {
       if (err)
         throw err;
 
-      req.files.artifact.mv(__dirname + '/../../public/nightlies/' + req.body.subdir + '/' + req.files.artifact.name, (err2) => {
+      req.files.artifact.mv(__dirname + '/../../public/nightlies/' + req.body.subdir + '/' + req.body.branch + "/" + req.files.artifact.name, (err2) => {
         if (err2)
           throw err2;
 
@@ -198,7 +218,7 @@ function bind(app) {
           message: 'File uploaded',
         }));
 
-        var data = '{"content":"Nightly ready for ' + req.body.subdir.replace(/"/g, "\\\"").replace(/_/g, " ") + ': https://supertux.semphris.com/nightlies/' + req.body.subdir.replace(/"/g, "\\\"") + '/' + req.files.artifact.name + '"}';
+        var data = '{"content":"Nightly ready for branch `' + req.body.branch.replace(/[^a-zA-Z0-9\-_]/g, ".") + '` for ' + req.body.subdir.replace(/"/g, "\\\"").replace(/_/g, " ") + ': https://supertux.semphris.com/nightlies/' + req.body.subdir.replace(/"/g, "\\\"") + '/' + req.files.artifact.name + '"}';
 
         var discordReq = https.request({
           hostname: "discord.com",
