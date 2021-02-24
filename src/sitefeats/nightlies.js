@@ -112,7 +112,7 @@ function bind(app) {
               '<td>' + a.branch + '</td>' + 
               '<td>' + a.date.toUTCString() + '</td>' + 
               '<td>' + a.size + ' MB</td>' +
-              '<td>' + a.hash + '</td>' + 
+              '<td style="word-break: break-all;">' + a.hash + '</td>' + 
                 '</tr>';
             }
 
