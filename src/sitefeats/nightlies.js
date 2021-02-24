@@ -218,7 +218,7 @@ function bind(app) {
           message: 'File uploaded',
         }));
 
-        var data = '{"content":"Nightly ready for branch `' + req.body.branch.replace(/[^a-zA-Z0-9\-_]/g, ".") + '` for ' + req.body.subdir.replace(/"/g, "\\\"").replace(/_/g, " ") + ': https://supertux.semphris.com/nightlies/' + req.body.subdir.replace(/"/g, "\\\"") + '/' + req.files.artifact.name + '"}';
+        var data = '{"content":"Nightly ready for branch `' + req.body.branch.replace(/[^a-zA-Z0-9\-_]/g, ".") + '` for ' + req.body.subdir.replace(/"/g, "\\\"").replace(/_/g, " ") + ': https://supertux.semphris.com/nightlies/' + req.body.subdir.replace(/"/g, "\\\"") + '/' + req.body.branch.replace(/"/g, "\\\"") + '/' + req.files.artifact.name.replace(/"/g, "\\\"") + '"}';
 
         var discordReq = https.request({
           hostname: "discord.com",
