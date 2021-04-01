@@ -40,26 +40,37 @@ function get_categories_html(cb) {
   });
 }
 
+var hash_cache = {};
+
 function get_file_info(file) {
   return new Promise(function(resolve, reject) {
     fs.stat(file, (err, stats) => {
       if (err)
         reject(err);
 
-      var fd = fs.createReadStream(file);
-      var hash = crypto.createHash('sha256');
-      hash.setEncoding('hex');
+      if (!hash_cache[file]) {
+        var fd = fs.createReadStream(file);
+        var hash = crypto.createHash('sha256');
+        hash.setEncoding('hex');
 
-      fd.on('end', function() {
-        hash.end();
+        fd.on('end', function() {
+          hash.end();
+          hash_cache[file] = hash.read();
+          resolve({
+            hash: hash_cache[file],
+            date: stats.mtime,
+            size: Math.floor(stats.size / 10485.76) / 100,
+          });
+        });
+
+        fd.pipe(hash);
+      } else {
         resolve({
-          hash: hash.read(),
+          hash: hash_cache[file],
           date: stats.mtime,
           size: Math.floor(stats.size / 10485.76) / 100,
         });
-      });
-
-      fd.pipe(hash);
+      }
     });
   });
 }
