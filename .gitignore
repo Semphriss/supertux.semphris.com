@@ -13,6 +13,7 @@ public/nightlies/
 
 # SuperTux WASM release
 public/play/
+public/supertux2*
 
 # Crash logs
 uploaded_logs/
