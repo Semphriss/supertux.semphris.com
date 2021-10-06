@@ -1,6 +1,6 @@
 {
   "name": "supertux.semphris.com",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Dynamic website, alternative to supertux.org",
   "main": "index.js",
   "scripts": {

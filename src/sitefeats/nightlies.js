@@ -28,15 +28,15 @@ function get_categories(cb) {
   });
 }
 
-function get_categories_html(cb) {
+function get_categories_html(curr, cb) {
   get_categories((cats) => {
     var html = '';
 
     for (var c of cats) {
-      html += '<li><a href="/nightlies/' + c + '">' + c.replace(/_/g, " ") + '</a></li>';
+      html += '<li><a href="/nightlies/' + c + '"' + (curr == c ? ' class="highlight"' : '') + '>' + c.replace(/_/g, " ") + '</a></li>';
     }
 
-    cb('<ul class="horiz-list">' + html + '</ul>');
+    cb('<ul class="horizontal-list">' + html + '</ul>');
   });
 }
 
@@ -77,7 +77,7 @@ function get_file_info(file) {
 
 function bind(app) {
   app.get('/nightlies/:subdir/?', (req, res) => {
-    get_categories_html((topbar) => {
+    get_categories_html(req.params.subdir, (topbar) => {
       recursive(__dirname + '/../../public/nightlies/' + req.params.subdir, async (err, artifacts) => {
         
         if (err) {

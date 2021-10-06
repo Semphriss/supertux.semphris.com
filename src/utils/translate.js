@@ -17,11 +17,11 @@
 var lang = 'fr';
 var region = 'CA';
 var translations = {
-  'Hello, world!': {
+  '[Insert default English text here]': {
     fr: {
-      default: 'Bonjour, tout le monde!',
-      FR: 'Bonjour tout le monde!',
-      CA: 'YOOOOOOOO SUP GANG',
+      default: '[Insérer texte français par défaut ici]',
+      FR: '[Insérer texte français de France ici]',
+      CA: '[Insérer texte français canadien ici]',
     },
   },
 }

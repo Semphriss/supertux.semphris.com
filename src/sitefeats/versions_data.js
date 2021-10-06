@@ -15,14 +15,14 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 const versions = {
-  "x64-linux": {
+  "linux-amd64": {
     "Releases": {
       "v0.6.2": "https://github.com/SuperTux/supertux/releases/download/v0.6.2/SuperTux_2-v0.6.2.glibc2.27-x86_64.AppImage",
       "v0.6.1": "https://github.com/SuperTux/supertux/releases/download/v0.6.1.1/SuperTux_2-v0.6.1.1.glibc2.27-x86_64.AppImage",
       "v0.6.0": "https://github.com/SuperTux/supertux/releases/download/v0.6.0/SuperTux_2-v0.6.0.glibc2.14-x86_64.AppImage"
     },
   },
-  "x64-osx": {
+  "osx-amd64": {
     "Releases": {
       "v0.6.2": "https://github.com/SuperTux/supertux/releases/download/v0.6.2/SuperTux-v0.6.2-Darwin.dmg",
       "v0.6.1": "https://github.com/SuperTux/supertux/releases/download/v0.6.1.1/SuperTux-v0.6.1.1-Darwin.dmg",
@@ -35,7 +35,7 @@ const versions = {
       "v0.1.3": "https://github.com/SuperTux/supertux/releases/download/v0.1.3/supertux-0.1.3-macosx-universal.dmg",
     },
   },
-  "x64-windows": {
+  "windows-amd64": {
     "Releases": {
       "v0.6.2": "https://github.com/SuperTux/supertux/releases/download/v0.6.2/SuperTux-v0.6.2-win64.msi",
       "v0.6.1": "https://github.com/SuperTux/supertux/releases/download/v0.6.1.1/SuperTux-v0.6.1.1-win64.msi",
@@ -49,7 +49,7 @@ const versions = {
       "v0.1.3": "https://github.com/SuperTux/supertux/releases/download/v0.1.3/supertux-0.1.3-setup.exe",
     },
   },
-  "x86-windows": {
+  "windows-i386": {
     "Releases": {
       "v0.6.2": "https://github.com/SuperTux/supertux/releases/download/v0.6.2/SuperTux-v0.6.2-win32.msi",
       "v0.6.1": "https://github.com/SuperTux/supertux/releases/download/v0.6.1.1/SuperTux-v0.6.1.1-win32.msi",
@@ -70,7 +70,7 @@ function bind(app) {
     const os = req.params.os;
 
     if (!os || typeof os !== "string"){
-      res.status(400).send("Error: Must put OS type (x64-linux, x86-windows, arm64-osx, etc.)");
+      res.status(400).send("Error: Must put OS type (linux-amd64, windows-i386, osx-arm64, etc.)");
       return;
     }
 

@@ -28,21 +28,13 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookie());
-//app.use(helmet());
+app.use(helmet());
 app.use(fileUpload({
   useTempFiles: true,
   tempFileDir: '/tmp/',
   limits: { fileSize: 500 * 1024 * 1024 },
   abortOnLimit: true
 }));
-
-app.use(function(req, res, next) {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Cross-Origin-Opener-Policy', 'same-origin');
-  res.header('Cross-Origin-Embedder-Policy', 'require-corp');
-  res.header('Cross-Origin-Resource-Policy', 'cross-origin');
-  next();
-});
 
 // Utilities provide useful global funcitons
 fs.readdirSync('./src/utils').forEach(file => {
@@ -65,14 +57,4 @@ fs.readdirSync('./src/sitefeats').forEach(file => {
 
 app.use(express.static('public'));
 
-var server = app.listen(config.port, () => {
-  console.log("Server running on port " + config.port);
-
-  exec("zip -r " + __dirname + "/public/source.zip " + __dirname + "/* -x " + __dirname + "/public/source.zip -x " + __dirname + "/config_private.js -x " + __dirname + "/.git/", (err) => {
-    if (!err)
-      return;
-    
-    console.log("Could not create source archive - aborting");
-    //server.close()
-  })
-});
+app.listen(config.port);
